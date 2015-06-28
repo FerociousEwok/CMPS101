@@ -118,19 +118,19 @@ public class List {
    // If List is non-empty, places the cursor under the front
    // element, otherwise does nothing.
    void moveFront() {
-      if(length < 1)
-         throw new RuntimeException("List Error: moveFront() called on empty List");
-      cursor = front;
-      index = 0; 
+      if(length > 0) {
+         cursor = front;
+         index = 0;
+      } 
    }
 
    // If List is non-empty, places the cursor under the back
    // element, otherwise does nothing.
    void moveBack() {
-      if(length < 1)
-         throw new RuntimeException("List Error: moveBack() called on empty List");
-      cursor = back;
-      index = length - 1;
+      if(length > 0) {
+         cursor = back;
+         index = length - 1;
+      }
    }
 
    // If cursor is defined and not at front, moves cursor one step
@@ -252,11 +252,17 @@ public class List {
          throw new RuntimeException("List Error: delete() called with an undefined index on List");
       if(length < 1)
          throw new RuntimeException("List Error: delete() called on an empty List");
-      cursor.prev.next = cursor.next;
-      cursor.next.prev = cursor.prev;
-      cursor = null;
-      index = -1;
-      --length;
+      if(cursor == back)
+         deleteBack();
+      else if(cursor == front)
+         deleteFront();
+      else {
+         cursor.prev.next = cursor.next;
+         cursor.next.prev = cursor.prev;
+         cursor = null;
+         index = -1;
+         --length;
+      }
    }
 
    // Overrides Object's toString method. Returns a String

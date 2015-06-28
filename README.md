@@ -1,10 +1,12 @@
-# Introduction to Data Structures
-- Wesley Mackey - Winter 2015
-- https://courses.soe.ucsc.edu/courses/cmps12b
-- http://www2.ucsc.edu/courses/cmps012b-wm/:/
+# Algorithms and Abstract Data Types
+- Patrick Tantalo - Summer 2015
+- https://courses.soe.ucsc.edu/courses/cmps101/
+- https://classes.soe.ucsc.edu/cmps101/Summer15/
 
-
-- Teaches students to implement common data structures and the algorithms associated with each data structure, through progressively difficult exercises. Topics include big "O" notation; pointers, recursion (induction), and dynamic allocation; linked lists and list processing; stacks, queues, binary trees and binary search trees; simple sorting techniques and simple search techniques. Students will gain a working knowledge of the elements of the Java and C programming languages.
+- Studies basic algorithms and their relationships to common abstract data types. Covers the notions of abstract data types and the distinction
+  between an abstract data type and an implementation of that data type. The complexity analysis of common algorithms using asymptotic (big "O")
+notation is emphasized. Topics include sorting and searching techniques, basic graph algorithms, and algorithm design techniques. Abstract data types
+covered include priority queues, dictionaries, disjoint sets, heaps, balanced trees, and hashing.
 
 <br/>
 

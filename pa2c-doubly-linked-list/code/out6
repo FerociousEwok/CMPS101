@@ -14,7 +14,7 @@
 #  RandomInput1.py
 #  by mixing up the lines in this file. To run this program do: 
 # close files   
-# get file names and ope@уб# read lines of this file into a list and randomize the list
+# get file names and open @уб# read lines of this file into a list and randomize the list
 # sort list and write lines to outfile
 # to mix-up some other file put its name in place of 'RandomInput1.py'
 # write mixed lines to infile

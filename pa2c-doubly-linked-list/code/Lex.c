@@ -1,4 +1,4 @@
-// $Id: Lex.c,v 1.3 2015-07-07 16:25:36-07 - - $
+// $Id: Lex.c,v 1.4 2015-07-07 16:35:31-07 - - $
 // Bradley Bernard, bmbernar@ucsc.edu
 // CS 101: PA2
 // July 6, 2015
@@ -13,7 +13,7 @@
 
 #include "List.h"
 
-#define MAX_LEN 160
+#define MAX_LEN 255
 
 int main(int argc, char * argv[]){
    // Initialize variables

@@ -1,9 +1,19 @@
-head	1.1;
+head	1.3;
 access;
 symbols;
 locks;
 comment	@ * @;
 
+
+1.3
+date	2015.07.07.23.25.36;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2015.07.07.23.22.22;	author -;	state -;
+branches;
+next	1.1;
 
 1.1
 date	2015.07.06.22.11.46;	author -;	state -;
@@ -15,12 +25,12 @@ desc
 @@
 
 
-1.1
+1.3
 log
 @-
 @
 text
-@// $Id$
+@// $Id: Lex.c,v 1.2 2015-07-07 16:22:22-07 - - $
 // Bradley Bernard, bmbernar@@ucsc.edu
 // CS 101: PA2
 // July 6, 2015
@@ -33,15 +43,15 @@ text
 #include<stdlib.h>
 #include<string.h>
 
+#include "List.h"
+
 #define MAX_LEN 160
 
 int main(int argc, char * argv[]){
-
-   int n, count=0;
+   // Initialize variables
+   int count = 0;
    FILE *in, *out;
    char line[MAX_LEN];
-   char tokenlist[MAX_LEN];
-   char* token;
 
    // check command line for correct number of arguments
    if( argc != 3 ){
@@ -64,6 +74,111 @@ int main(int argc, char * argv[]){
    /* read each line of input file, then count and print tokens */
    while( fgets(line, MAX_LEN, in) != NULL)  {
       count++;
+   }
+   
+   // reset file pointer to start of file
+   rewind(in);
+
+   char lines[count - 1][MAX_LEN];
+   int ln = -1;
+   // Loop through and copy the file lines into a string array
+   while(fgets(line, MAX_LEN, in) != NULL) {
+      strcpy(lines[++ln], line);
+   }
+   
+   // Create new List ADT
+   List list = newList();
+
+   // Append line number zero to start sorting
+   append(list, 0);
+
+   // Insertion Sort for (length - 2) elements
+   for(int j = 1; j < count; ++j) {
+      char *tmp = lines[j];
+      int i = j - 1;
+      // Reset list index to the back so we are able to
+      // movePrev() to find the right index for insertion
+      moveBack(list);
+      // String compare the current line and each line in the list
+      while(i >= 0 && strcmp(tmp, lines[get(list)]) <= 0) {
+         --i;
+         movePrev(list);
+      }
+      
+      if(index(list) >= 0)
+      //Exited loop before moving off so insertAfter() index
+         insertAfter(list, j);
+      else
+      // Fell off the list so the new element must be prepend()
+         prepend(list, j);
+   }
+   
+   // Reset index to the front of the list
+   moveFront(list);
+   // Loop through List to print out all lines in correct order
+   while(index(list) >= 0) {
+      fprintf(out, "%s", lines[get(list)]);
+      moveNext(list);
+   }
+
+
+   /* close files */
+   fclose(in);
+   fclose(out);
+   
+   // Free list ADT
+   freeList(&list);
+
+   return(0);
+}
+@
+
+
+1.2
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: Lex.c,v 1.1 2015-07-06 15:11:46-07 - - $
+d19 1
+a19 1
+
+d49 1
+d52 1
+d57 1
+d59 2
+d62 2
+d67 2
+d70 1
+d77 1
+d80 1
+d83 2
+a84 1
+
+d86 1
+d96 1
+@
+
+
+1.1
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id$
+d14 2
+d20 1
+a20 1
+   int n, count=0;
+a22 2
+   char tokenlist[MAX_LEN];
+   char* token;
+d45 19
+a63 9
       n = 0;
       token = strtok(line, " \n");
       tokenlist[0] = '\0';
@@ -73,15 +188,10 @@ int main(int argc, char * argv[]){
          strcat(tokenlist, "\n");
          n++;
          token = strtok(NULL, " \n");
-      }
+d65 5
+a69 2
       fprintf(out, "line %d contains %d token%s: \n", count, n, n==1?"":"s");
       fprintf(out, "%s\n", tokenlist);
-   }
-
-   /* close files */
-   fclose(in);
-   fclose(out);
-
-   return(0);
-}
+d72 7
+d82 2
 @

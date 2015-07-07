@@ -1,4 +1,4 @@
-// $Id: Lex.c,v 1.1 2015-07-06 15:11:46-07 - - $
+// $Id: Lex.c,v 1.3 2015-07-07 16:25:36-07 - - $
 // Bradley Bernard, bmbernar@ucsc.edu
 // CS 101: PA2
 // July 6, 2015
@@ -11,15 +11,15 @@
 #include<stdlib.h>
 #include<string.h>
 
+#include "List.h"
+
 #define MAX_LEN 160
 
 int main(int argc, char * argv[]){
-
-   int n, count=0;
+   // Initialize variables
+   int count = 0;
    FILE *in, *out;
    char line[MAX_LEN];
-   char tokenlist[MAX_LEN];
-   char* token;
 
    // check command line for correct number of arguments
    if( argc != 3 ){
@@ -42,23 +42,60 @@ int main(int argc, char * argv[]){
    /* read each line of input file, then count and print tokens */
    while( fgets(line, MAX_LEN, in) != NULL)  {
       count++;
-      n = 0;
-      token = strtok(line, " \n");
-      tokenlist[0] = '\0';
-      while( token!=NULL ){
-         strcat(tokenlist, "   ");
-         strcat(tokenlist, token);
-         strcat(tokenlist, "\n");
-         n++;
-         token = strtok(NULL, " \n");
-      }
-      fprintf(out, "line %d contains %d token%s: \n", count, n, n==1?"":"s");
-      fprintf(out, "%s\n", tokenlist);
    }
+   
+   // reset file pointer to start of file
+   rewind(in);
+
+   char lines[count - 1][MAX_LEN];
+   int ln = -1;
+   // Loop through and copy the file lines into a string array
+   while(fgets(line, MAX_LEN, in) != NULL) {
+      strcpy(lines[++ln], line);
+   }
+   
+   // Create new List ADT
+   List list = newList();
+
+   // Append line number zero to start sorting
+   append(list, 0);
+
+   // Insertion Sort for (length - 2) elements
+   for(int j = 1; j < count; ++j) {
+      char *tmp = lines[j];
+      int i = j - 1;
+      // Reset list index to the back so we are able to
+      // movePrev() to find the right index for insertion
+      moveBack(list);
+      // String compare the current line and each line in the list
+      while(i >= 0 && strcmp(tmp, lines[get(list)]) <= 0) {
+         --i;
+         movePrev(list);
+      }
+      
+      if(index(list) >= 0)
+      //Exited loop before moving off so insertAfter() index
+         insertAfter(list, j);
+      else
+      // Fell off the list so the new element must be prepend()
+         prepend(list, j);
+   }
+   
+   // Reset index to the front of the list
+   moveFront(list);
+   // Loop through List to print out all lines in correct order
+   while(index(list) >= 0) {
+      fprintf(out, "%s", lines[get(list)]);
+      moveNext(list);
+   }
+
 
    /* close files */
    fclose(in);
    fclose(out);
+   
+   // Free list ADT
+   freeList(&list);
 
    return(0);
 }

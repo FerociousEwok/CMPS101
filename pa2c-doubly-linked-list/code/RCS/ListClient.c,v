@@ -1,9 +1,14 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks;
 comment	@ * @;
 
+
+1.2
+date	2015.07.07.23.38.37;	author -;	state -;
+branches;
+next	1.1;
 
 1.1
 date	2015.07.07.08.51.31;	author -;	state -;
@@ -15,7 +20,7 @@ desc
 @@
 
 
-1.1
+1.2
 log
 @-
 @
@@ -93,5 +98,15 @@ true
 1 2 3 4 5 -1 6 7 8 9 11 12 13 14 15 -2 16 17 18 19 20
 21
 0
+*/@
+
+
+1.1
+log
+@-
+@
+text
+@d74 1
+a74 1
 */
 @

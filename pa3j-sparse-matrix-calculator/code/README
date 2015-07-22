@@ -1,0 +1,29 @@
+Bradley Bernard, bmbernar@ucsc.edu
+CS 101: PA3
+July 18, 2015
+
+List.java
+A doubly linked list creating a List ADT. The nodes data is
+an Entry object that contains column number and double value.
+
+ListTest.java
+The client test for the List ADT, which we had to create.
+
+Sparse.java
+A client module that will load in a input file that represents
+a matrix, and outputs commands on that matrix.
+
+Matrix.java
+An array of Lists that hold the matrix rows one for each array spot.
+
+MatrixTest.java
+The client test for the Matrix, which we had to create.
+
+Makefile
+A boilerplate file in Make taken from the PA3 directory
+to compile all java files into a jar for the
+current directory.
+
+README
+A file containing a table of contents for the source
+code and other related files.

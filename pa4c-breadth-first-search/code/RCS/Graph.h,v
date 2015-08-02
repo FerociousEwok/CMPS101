@@ -1,0 +1,98 @@
+head	1.3;
+access;
+symbols;
+locks;
+comment	@ * @;
+
+
+1.3
+date	2015.08.02.02.11.01;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2015.08.02.00.06.24;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2015.07.31.06.10.32;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@-
+@
+text
+@// Bradley Bernard, bmbernar@@ucsc.edu
+// CS 101: PA4
+// July 30, 2015
+// $Id: Graph.h,v 1.2 2015-08-01 17:06:24-07 - - $
+
+#ifndef __GRAPH_H__
+#define __GRAPH_H__
+
+#include <stdio.h>
+#include "List.h"
+
+#define NIL -2
+#define INF -1
+
+typedef struct GraphObj* Graph;
+
+Graph newGraph(int n);
+void freeGraph(Graph* pG);
+
+int getOrder(Graph G);
+int getSize(Graph G);
+int getSource(Graph G);
+int getParent(Graph G, int u);
+int getDist(Graph G, int u);
+void getPath(List L, Graph G, int u);
+
+void makeNull(Graph G);
+void addEdge(Graph G, int u, int v);
+void addArc(Graph G, int u, int v);
+void BFS(Graph G, int s);
+
+void printGraph(FILE *out, Graph G);
+
+#endif
+@
+
+
+1.2
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.h,v 1.1 2015-07-30 23:10:32-07 - - $
+d6 2
+a7 2
+#ifndef _GRAPH_H_INCLUDE_
+#define _GRAPH_H_INCLUDE_
+a16 1
+
+@
+
+
+1.1
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id$
+d33 1
+a33 1
+void printGraph(FILE* out, Graph G);
+@

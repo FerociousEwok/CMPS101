@@ -1,0 +1,580 @@
+head	1.18;
+access;
+symbols;
+locks;
+comment	@ * @;
+
+
+1.18
+date	2015.08.02.02.11.01;	author -;	state -;
+branches;
+next	1.17;
+
+1.17
+date	2015.08.02.02.06.11;	author -;	state -;
+branches;
+next	1.16;
+
+1.16
+date	2015.08.02.01.55.35;	author -;	state -;
+branches;
+next	1.15;
+
+1.15
+date	2015.08.02.01.54.46;	author -;	state -;
+branches;
+next	1.14;
+
+1.14
+date	2015.08.02.01.52.35;	author -;	state -;
+branches;
+next	1.13;
+
+1.13
+date	2015.08.02.01.49.09;	author -;	state -;
+branches;
+next	1.12;
+
+1.12
+date	2015.08.02.01.45.56;	author -;	state -;
+branches;
+next	1.11;
+
+1.11
+date	2015.08.02.00.09.24;	author -;	state -;
+branches;
+next	1.10;
+
+1.10
+date	2015.08.02.00.08.12;	author -;	state -;
+branches;
+next	1.9;
+
+1.9
+date	2015.08.02.00.07.17;	author -;	state -;
+branches;
+next	1.8;
+
+1.8
+date	2015.08.02.00.06.24;	author -;	state -;
+branches;
+next	1.7;
+
+1.7
+date	2015.08.02.00.05.21;	author -;	state -;
+branches;
+next	1.6;
+
+1.6
+date	2015.08.02.00.04.32;	author -;	state -;
+branches;
+next	1.5;
+
+1.5
+date	2015.08.01.23.38.50;	author -;	state -;
+branches;
+next	1.4;
+
+1.4
+date	2015.08.01.23.30.50;	author -;	state -;
+branches;
+next	1.3;
+
+1.3
+date	2015.08.01.23.28.44;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2015.08.01.23.18.33;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2015.07.31.06.09.44;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.18
+log
+@-
+@
+text
+@// Bradley Beranrd, bmbernar@@ucsc.edu
+// CS 101: PA4
+// July 30, 2015
+// $Id: Graph.c,v 1.17 2015-08-01 19:06:11-07 - - $
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "Graph.h"
+
+// Enum for BFS algorithm
+#define WHITE 0
+#define GRAY 1
+#define BLACK 2
+
+struct GraphObj {
+   List *adj;
+   int *color;
+   int *parent;
+   int *distance;
+   int order;
+   int size;
+   int source;
+};
+
+// Returns a pointer to a new GraphObj
+Graph newGraph(int n) {
+   Graph G = malloc(sizeof(struct GraphObj));
+   G->adj = calloc(n + 1, sizeof(List));
+   G->color = calloc(n + 1, sizeof(int));
+   G->parent = calloc(n + 1, sizeof(int));
+   G->distance = calloc(n + 1, sizeof(int));
+   G->source = NIL;
+   G->order = n;
+   G->size = 0;
+   for(int i = 0; i < (n + 1); ++i) {
+      G->adj[i] = newList();
+      G->color[i] = WHITE;
+      G->parent[i] = NIL;
+      G->distance[i] = INF;
+   }
+   return G;
+}
+
+// Frees memory allocate to a GraphObj
+void freeGraph(Graph *pG) {
+   Graph old = *pG;
+   for(int i = 0; i < (old->order + 1); ++i) {
+      freeList(&(old->adj[i]));
+   }
+   free(old->adj);
+   free(old->parent);
+   free(old->distance);
+   free(old->color);
+   free(*pG);
+   *pG = NULL;
+}
+
+// Returns the number of verticies in the Graph
+int getOrder(Graph G) {
+   return G->order;
+}
+
+// Returns the number of edges in the Graph
+int getSize(Graph G) {
+   return G->size;
+}
+
+// Returns the source from calling BFS(G, s)
+int getSource(Graph G) {
+   return G->source;
+}
+
+// Returns the parent of a given vertex
+// Pre: 1 <= u <= getOrder(G)
+int getParent(Graph G, int u) {
+   if(u < 1 || u > getOrder(G)) {
+     printf("Graph Error: calling getParent() with vertex out of bounds\n");
+     exit(1); 
+   }
+   return G->parent[u];
+}
+
+// Returns the distance from the source to a given vertex
+// Pre: 1 <= u <= getOrder(G)
+int getDist(Graph G, int u) {
+   if(getSource(G) == NIL) {
+      return INF;
+   }
+   if(u < 1 || u > getOrder(G)) {
+     printf("Graph Error: calling getDist() with vertex out of bounds\n");
+     exit(1); 
+   }
+   return G->distance[u];
+}
+
+// Returns the path from the source to given vertex
+// Pre: 1 <= u <= getOrder(G)
+void getPath(List L, Graph G, int u) {
+   if(getSource(G) == NIL) {
+      printf("Graph Error: calling getPath() with NULL source\n"); 
+   }
+   if(u < 1 || u > getOrder(G)) {
+     printf("Graph Error: calling getPath() with vertex out of bounds\n");
+     exit(1); 
+   }
+   int s = G->source;
+   if(u == s) {
+      prepend(L, s);
+   } else if(G->parent[u] == NIL) {
+      append(L, NIL);
+   } else {
+      prepend(L, u);
+      getPath(L, G, G->parent[u]);
+   }
+}
+
+// Clears all adjacency Lists for the Graph
+void makeNull(Graph G) {
+   for(int i = 0; i < (G->order + 1); ++i) {
+     clear(G->adj[i]);
+   }
+}
+
+// Adds an undirected edge to the Graph G from u to v
+// Pre: 1 <= u <= getOrder(G), 1 <= v <= getOrder(G)
+void addEdge(Graph G, int u, int v) {
+   if(u < 1 || u > getOrder(G) || v < 1 || v > getOrder(G)) {
+     printf("Graph Error: calling addEdge() with verticies out of bounds\n");
+     exit(1); 
+   }
+   addArc(G, u, v);
+   addArc(G, v, u);
+   G->size--;
+}
+
+// Adds a directed edge to the Graph G from u to v
+// Pre: 1 <= u <= getOrder(G), 1 <= v <= getOrder(G)
+void addArc(Graph G, int u, int v) {
+   if(u < 1 || u > getOrder(G) || v < 1 || v > getOrder(G)) {
+     printf("Graph Error: calling addArc() with verticies out of bounds\n");
+     exit(1); 
+   }
+   List S = G->adj[u];
+   moveFront(S);
+   while(index(S) > -1 && v > get(S)) {
+      moveNext(S);
+   }
+   if(index(S) == -1)
+      append(S, v);
+   else 
+      insertBefore(S, v);
+   G->size++;
+}
+
+// Performs Breadth-first search on the Graph G with the
+// given source vertex s.
+void BFS(Graph G, int s) {
+   for(int i = 0; i < (G->order + 1); ++i) {
+      G->parent[i] = NIL;
+      G->distance[i] = INF;
+      G->color[i] = WHITE;
+   }
+   G->source = s;
+   G->distance[s] = 0;
+   G->color[s] = GRAY;
+   List Q = newList();
+   prepend(Q, s);
+   while(length(Q) > 0) {
+      int ele = back(Q);
+      deleteBack(Q);
+      List adj = G->adj[ele];
+      moveFront(adj);
+      while(index(adj) > -1) {
+         int v = get(adj);
+         if(G->color[v] == WHITE) {
+            G->color[v] = GRAY;
+            G->parent[v] = ele;
+            G->distance[v] = G->distance[ele] + 1;
+            prepend(Q, v);
+         }
+         moveNext(adj);
+      }
+   }
+   freeList(&Q); 
+}
+
+// Prints out the Graph by iterating over and printing out
+// each adjacency list with the row number preceeding it.
+void printGraph(FILE *out, Graph G) {
+   if(out == NULL || G == NULL) {
+      printf("Graph Error: called printGraph() on a null reference");
+      exit(1);
+   }
+   for(int i = 1; i <= getOrder(G); ++i) {
+      fprintf(out, "%d: ", i);
+      printList(out, G->adj[i]);
+      fprintf(out, "\n");
+   }
+}
+@
+
+
+1.17
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.16 2015-08-01 18:55:35-07 - - $
+a109 1
+      //return;
+@
+
+
+1.16
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.15 2015-08-01 18:54:46-07 - - $
+d11 1
+d45 1
+d59 1
+d64 1
+d69 1
+d74 2
+d78 1
+a78 1
+     printf("Graph Error: calling getDist() with vertex out of bounds");
+d84 2
+d97 2
+d107 4
+a110 4
+   int x = G->source;
+   if(u == x) {
+      prepend(L, x);
+      return;
+d119 1
+d126 2
+d138 2
+d157 2
+d189 2
+@
+
+
+1.15
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.14 2015-08-01 18:52:35-07 - - $
+d168 1
+a168 1
+   //freeList(&Q); 
+@
+
+
+1.14
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.13 2015-08-01 18:49:09-07 - - $
+d168 1
+a168 1
+   freeList(&Q); 
+@
+
+
+1.13
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.12 2015-08-01 18:45:56-07 - - $
+d25 1
+a31 1
+   
+a34 1
+   
+a40 1
+   
+d167 2
+a168 1
+   } 
+@
+
+
+1.12
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.11 2015-08-01 17:09:24-07 - - $
+d151 1
+@
+
+
+1.11
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.10 2015-08-01 17:08:12-07 - - $
+d84 1
+a84 1
+     printf("Graph Error: calling getDist() with vertex out of bounds");
+d92 1
+a92 1
+      
+d95 1
+a95 1
+     printf("Graph Error: calling getPath() with vertex out of bounds");
+d118 1
+a118 1
+     printf("Graph Error: calling addEdge() with verticies out of bounds");
+d128 1
+a128 1
+     printf("Graph Error: calling addArc() with verticies out of bounds");
+@
+
+
+1.10
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.9 2015-08-01 17:07:17-07 - - $
+d177 1
+a177 1
+      printf(out, "%d: ", i);
+d179 1
+a179 1
+      printf(out, "\n");
+@
+
+
+1.9
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.8 2015-08-01 17:06:24-07 - - $
+d6 1
+@
+
+
+1.8
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.7 2015-08-01 17:05:21-07 - - $
+d178 1
+a178 1
+      fprint(out, "\n");
+@
+
+
+1.7
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.6 2015-08-01 17:04:32-07 - - $
+a5 1
+#include <stdio.h>
+d7 1
+@
+
+
+1.6
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.5 2015-08-01 16:38:50-07 - - $
+d6 1
+@
+
+
+1.5
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.4 2015-08-01 16:30:50-07 - - $
+d175 1
+d177 1
+@
+
+
+1.4
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.3 2015-08-01 16:28:44-07 - - $
+d164 1
+@
+
+
+1.3
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.2 2015-08-01 16:18:33-07 - - $
+d167 10
+@
+
+
+1.2
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id: Graph.c,v 1.1 2015-07-30 23:09:44-07 - - $
+d71 2
+a72 1
+   
+d82 2
+a83 1
+      
+d93 2
+a94 1
+   
+d138 28
+@
+
+
+1.1
+log
+@-
+@
+text
+@d4 1
+a4 1
+// $Id$
+d43 93
+@

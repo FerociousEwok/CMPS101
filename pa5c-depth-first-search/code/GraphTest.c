@@ -1,7 +1,8 @@
-//-----------------------------------------------------------------------------
-// GraphClient.c
-// Test client for the Graph ADT
-//-----------------------------------------------------------------------------
+// Bradley Beranrd, bmbernar@ucsc.edu
+// CS 101: PA5
+// Aug 7, 2015
+// $Id$
+
 #include<stdio.h>
 #include<stdlib.h>
 #include"List.h"
@@ -59,11 +60,41 @@ int main(int argc, char* argv[]){
    printList(stdout, S);
    fprintf(stdout, "\n");
 
+   //*********************
+   
+   List apple = newList();
+   for(int m = 1; i <= 20; ++i)
+      append(apple, m);
+   
+   Graph grape = newGraph(20);
+   addEdge(grape, 1, 2);
+   addEdge(grape, 2, 3);
+   addEdge(grape, 3, 4);
+   addEdge(grape, 4, 1);
+   
+   DFS(grape, apple);
+   fprintf(stdout, "\n");
+   fprintf(stdout, "x:  d  f  p\n");
+   for(i=1; i<=n; i++){
+      fprintf(stdout, "%d: %2d %2d %2d\n", i, getDiscover(T, i), getFinish(T, i), getParent(T, i));
+   }
+   fprintf(stdout, "\n");
+
+   Graph orange = transpose(grape);
+   
+   DFS(orange, apple);
+   fprintf(stdout, "\n");
+   fprintf(stdout, "x:  d  f  p\n");
+   for(i=1; i<=n; i++){
+      fprintf(stdout, "%d: %2d %2d %2d\n", i, getDiscover(T, i), getFinish(T, i), getParent(T, i));
+   }
+   fprintf(stdout, "\n");
+
+   //********************
+
    freeList(&S);
    freeGraph(&G);
    freeGraph(&T);
    freeGraph(&C);
    return(0);
 }
-
-

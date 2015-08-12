@@ -1,7 +1,7 @@
 // Bradley Bernard, bmbernar@ucsc.edu
 // CS 101: PA2
 // July 7, 2015
-// $Id: List.c,v 1.1 2015-08-04 20:50:58-07 - - $
+// $Id: List.c,v 1.2 2015-08-10 15:31:42-07 - - $
 
 //-----------------------------------------------------------------------------
 // List.c
@@ -226,11 +226,11 @@ void moveNext(List L) {
       printf("List Error: calling moveNext() on NULL List reference\n");
       exit(1);
    }
-   if(L->cursor != NULL && L->index != L->length - 1) {
+   if(L->cursor != NULL && L->cursor != L->back) {
       L->cursor = L->cursor->next;
       ++L->index;
    }
-   else if(L->cursor != NULL && L->index == L->length - 1) {
+   else if(L->cursor != NULL && L->cursor == L->back) {
       L->cursor = NULL;
       L->index = -1;
    }

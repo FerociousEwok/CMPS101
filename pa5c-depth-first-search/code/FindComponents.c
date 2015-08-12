@@ -1,8 +1,7 @@
 // Bradley Bernard, bmbernar@ucsc.edu
 // CS 101: PA5
 // August 4, 2015
-// $Id: FindComponents.c,v 1.1 2015-08-04 20:50:58-07 - - $
-
+// $Id: FindComponents.c,v 1.2 2015-08-10 15:31:42-07 - - $
 
 #include<stdio.h>
 #include<string.h>
@@ -13,7 +12,6 @@
 #define MAX_LEN 255
 
 int main(int argc, char * argv[]){
-
    FILE *in, *out;
    char line[MAX_LEN];
    
@@ -37,6 +35,10 @@ int main(int argc, char * argv[]){
    int size = 0;
    sscanf(line, "%d", &size);
    
+   List S = newList();
+   for(int x = 1; x <= size; ++x) 
+      append(S, x);
+   
    Graph G = newGraph(size);
    while( fgets(line, MAX_LEN, in) != NULL)  {
       int a = 0;
@@ -44,40 +46,48 @@ int main(int argc, char * argv[]){
       sscanf(line, "%d %d", &a, &b);
       if(a == 0 && b == 0) 
          break;
-      addEdge(G, a, b);   
+      addArc(G, a, b);   
    }
-   printGraph(out, G);
    
-   int cnt = 0;
-   while( fgets(line, MAX_LEN, in) != NULL)  {
-      int a = 0;
-      int b = 0;
-      sscanf(line, "%d %d", &a, &b);
-      if(a == 0 && b == 0) 
+   DFS(G, S);
+   Graph T = transpose(G);
+   int scc = 0;
+   DFS(T, S);
+   moveFront(S);
+   while(index(S) >= 0) {
+      if(getParent(T, get(S)) == NIL)
+         scc++;
+      moveNext(S);
+   }
+  
+   List Lscc[scc];
+   for(int i = 0; i < scc; ++i) {
+      Lscc[i] = newList();
+   }
+   
+   moveFront(S);
+   int l = scc;
+   while(index(S) >= 0) {
+      if(getParent(T, get(S)) == NIL)
+         --l;
+      if(l == scc) 
          break;
-      if(cnt++ != 0)
-         fprintf(out, "\n");
-      fprintf(out, "\n");
-      BFS(G, a);
-      int d = getDist(G, b);
-      fprintf(out, "The distance from %d to %d is ", a, b);
-      if(d == INF)
-         fprintf(out, "infinity\n");
-      else
-         fprintf(out, "%d\n", d);
-      List P = newList();
-      getPath(P, G, b);
-      if(front(P) == NIL)
-         fprintf(out, "No %d-%d path exists", a, b);
-      else {
-         fprintf(out, "A shortest %d-%d path is: ", a, b);
-         printList(out, P);
-      }
-      freeList(&P);
+      append(Lscc[l], get(S));
+      moveNext(S);
    }
 
+   fprintf(out, "Adjacency list representation of G:\n");
+   printGraph(out, G);
+   fprintf(out, "\nG contains %d strongly connected components:", scc);
+   for(int m = 0; m < scc; ++m) {
+      fprintf(out, "\nComponent %d: ", (m + 1));
+      printList(out, Lscc[m]);
+      freeList(&(Lscc[m]));
+   }
    fprintf(out, "\n");
    freeGraph(&G);   
+   freeGraph(&T);
+   freeList(&S);
 
    /* close files */
    fclose(in);

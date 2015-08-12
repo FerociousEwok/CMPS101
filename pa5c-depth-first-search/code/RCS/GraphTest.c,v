@@ -1,9 +1,14 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks;
 comment	@ * @;
 
+
+1.2
+date	2015.08.10.22.31.42;	author -;	state -;
+branches;
+next	1.1;
 
 1.1
 date	2015.08.05.03.50.58;	author -;	state -;
@@ -15,7 +20,7 @@ desc
 @@
 
 
-1.1
+1.2
 log
 @-
 @
@@ -32,6 +37,7 @@ text
 
 int main(int argc, char* argv[]){
    int i, n=8;
+   //int i, n=4;
    List S = newList();
    Graph G = newGraph(n);
    Graph T=NULL, C=NULL;
@@ -51,6 +57,10 @@ int main(int argc, char* argv[]){
    addArc(G, 6,7);
    addArc(G, 8,4);
    addArc(G, 8,7);
+   /*addArc(G, 1, 2);
+   addArc(G, 2, 4);
+   addArc(G, 3, 1);
+   addArc(G, 4, 3);*/
    printGraph(stdout, G);
 
    DFS(G, S);
@@ -89,4 +99,14 @@ int main(int argc, char* argv[]){
 }
 
 
+@
+
+
+1.1
+log
+@-
+@
+text
+@d13 1
+d33 4
 @
